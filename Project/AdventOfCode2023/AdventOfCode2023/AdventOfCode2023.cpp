@@ -3,13 +3,17 @@
 
 #include <iostream>
 #include <Day1.cpp>
+#include <Day2.cpp>
 
 int main()
 {
-    std::cout << "Hello World!\n";
-    std::cout << Day1::CalcInputSum("input.txt", false);
+    /*std::cout << "Hello World!\n";
+    std::cout << Day1::D1CalcInputSum("Day1/input.txt", false);
     std::cout << "\n";
-    std::cout << Day1::CalcInputSum("input.txt", true);
+    std::cout << Day1::D1CalcInputSum("Day1/input.txt", true);*/
+    std::cout << Day2::D2P1CalcCubeIDs("Day2/input.txt");
+    std::cout << "\n";
+    std::cout << Day2::D2P2CalcCubePowers("Day2/input.txt");
     std::cout << "\n";
 }
 

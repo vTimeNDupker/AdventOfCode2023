@@ -11,7 +11,7 @@ using namespace std;
 static class Day1
 {
 	public:
-		static int CalcInputSum(string filePath, bool checkForSpelledNumbers)
+		static int D1CalcInputSum(string filePath, bool checkForSpelledNumbers)
 		{
 			std::ifstream file; 
 			file.open(filePath, ios::in);
