@@ -1,36 +1,8 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include<list>
-using namespace std;
+#include<CommonFunctions.cpp>
 
 static class Day2
 {
 	private:
-		static list<string> Split(string mainString, string delimiter)
-		{
-			size_t pos = 0;
-			string token;
-			list<string> data = {};
-			string copy = mainString;
-			while ((pos = mainString.find(delimiter)) != string::npos) {
-				token = mainString.substr(0, pos);
-				data.push_back(token);
-				mainString.erase(0, pos + delimiter.length());
-			}
-			data.push_back(mainString);
-			return data;
-		}
-
-		static string RemoveSubstring(string mainString, string subString)
-		{
-			size_t pos = 0;
-			while ((pos = mainString.find(subString)) != string::npos) {
-				mainString.erase(pos, subString.length());
-			}
-			return mainString;
-		}
-
 		static bool isWithinLimit(string data, int limit, string id)
 		{
 			size_t pos = 0;
@@ -82,13 +54,13 @@ static class Day2
 			{
 				string line = *it;
 				line.erase(0, line.find(": ") + 2);
-				line = RemoveSubstring(line, " ");
-				list<string> subsets = Split(line, ";");
+				line = CommonFuncAOC2023::RemoveSubstring(line, " ");
+				list<string> subsets = CommonFuncAOC2023::Split(line, ";");
 				bool withinLimits = true;
 				for (list<string>::iterator subsetit = subsets.begin(); subsetit != subsets.end(); ++subsetit)
 				{
 					string subset = *subsetit;
-					list<string> cubeColorSet = Split(subset, ",");
+					list<string> cubeColorSet = CommonFuncAOC2023::Split(subset, ",");
 					for (list<string>::iterator colorit = cubeColorSet.begin(); colorit != cubeColorSet.end(); ++colorit)
 					{
 						string colorCubes = *colorit;
@@ -135,8 +107,8 @@ static class Day2
 			{
 				string line = *it;
 				line.erase(0, line.find(": ") + 2);
-				line = RemoveSubstring(line, " ");
-				list<string> subsets = Split(line, ";");
+				line = CommonFuncAOC2023::RemoveSubstring(line, " ");
+				list<string> subsets = CommonFuncAOC2023::Split(line, ";");
 
 				int redMax = 0;
 				int greenMax = 0;
@@ -145,7 +117,7 @@ static class Day2
 				for (list<string>::iterator subsetit = subsets.begin(); subsetit != subsets.end(); ++subsetit)
 				{
 					string subset = *subsetit;
-					list<string> cubeColorSet = Split(subset, ",");
+					list<string> cubeColorSet = CommonFuncAOC2023::Split(subset, ",");
 					for (list<string>::iterator colorit = cubeColorSet.begin(); colorit != cubeColorSet.end(); ++colorit)
 					{
 						string colorCubes = *colorit;

@@ -1,19 +1,23 @@
 // AdventOfCode2023.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include <iostream>
 #include <Day1.cpp>
 #include <Day2.cpp>
+#include <Day3.cpp>
 
 int main()
 {
     /*std::cout << "Hello World!\n";
     std::cout << Day1::D1CalcInputSum("Day1/input.txt", false);
     std::cout << "\n";
-    std::cout << Day1::D1CalcInputSum("Day1/input.txt", true);*/
+    std::cout << Day1::D1CalcInputSum("Day1/input.txt", true);
     std::cout << Day2::D2P1CalcCubeIDs("Day2/input.txt");
     std::cout << "\n";
-    std::cout << Day2::D2P2CalcCubePowers("Day2/input.txt");
+    std::cout << Day2::D2P2CalcCubePowers("Day2/input.txt"); */
+    Day3::D3GetGrid("Day3/input.txt");
+    std::cout << Day3::D3P1CalcPartNumbers();
+    std::cout << "\n";
+    std::cout << Day3::D3P2GetGearRatios();
     std::cout << "\n";
 }
 
