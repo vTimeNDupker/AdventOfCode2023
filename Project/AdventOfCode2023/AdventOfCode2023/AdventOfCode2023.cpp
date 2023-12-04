@@ -4,21 +4,28 @@
 #include <Day1.cpp>
 #include <Day2.cpp>
 #include <Day3.cpp>
+#include <Day4.cpp>
 
 int main()
 {
-    /*std::cout << "Hello World!\n";
-    std::cout << Day1::D1CalcInputSum("Day1/input.txt", false);
+    /*std::cout << Day1::D1CalcInputSum("Day1/input.txt", false);
     std::cout << "\n";
     std::cout << Day1::D1CalcInputSum("Day1/input.txt", true);
-    std::cout << Day2::D2P1CalcCubeIDs("Day2/input.txt");
+    std::cout << "\n";*/
+    /*std::cout << Day2::D2P1CalcCubeIDs("Day2/input.txt");
     std::cout << "\n";
-    std::cout << Day2::D2P2CalcCubePowers("Day2/input.txt"); */
-    Day3::D3GetGrid("Day3/input.txt");
+    std::cout << Day2::D2P2CalcCubePowers("Day2/input.txt"); 
+    std::cout << "\n";*/
+    /*Day3::D3GetGrid("Day3/input.txt");
     std::cout << Day3::D3P1CalcPartNumbers();
     std::cout << "\n";
     std::cout << Day3::D3P2GetGearRatios();
+    std::cout << "\n";*/
+    std::cout << Day4::D4P1CalcCardPoints("Day4/input.txt");
     std::cout << "\n";
+    std::cout << Day4::D4P2CalcScratchCards("Day4/input.txt");
+    std::cout << "\n";
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

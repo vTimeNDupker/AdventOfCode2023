@@ -1,4 +1,6 @@
-#include<CommonFunctions.cpp>
+#include<CommonFunctions.h>
+#include <iostream>
+#include <fstream>
 
 static class Day2
 {
@@ -54,13 +56,13 @@ static class Day2
 			{
 				string line = *it;
 				line.erase(0, line.find(": ") + 2);
-				line = CommonFuncAOC2023::RemoveSubstring(line, " ");
-				list<string> subsets = CommonFuncAOC2023::Split(line, ";");
+				line = CommonFunc::RemoveSubstring(line, " ");
+				list<string> subsets = CommonFunc::Split(line, ";");
 				bool withinLimits = true;
 				for (list<string>::iterator subsetit = subsets.begin(); subsetit != subsets.end(); ++subsetit)
 				{
 					string subset = *subsetit;
-					list<string> cubeColorSet = CommonFuncAOC2023::Split(subset, ",");
+					list<string> cubeColorSet = CommonFunc::Split(subset, ",");
 					for (list<string>::iterator colorit = cubeColorSet.begin(); colorit != cubeColorSet.end(); ++colorit)
 					{
 						string colorCubes = *colorit;
@@ -107,8 +109,8 @@ static class Day2
 			{
 				string line = *it;
 				line.erase(0, line.find(": ") + 2);
-				line = CommonFuncAOC2023::RemoveSubstring(line, " ");
-				list<string> subsets = CommonFuncAOC2023::Split(line, ";");
+				line = CommonFunc::RemoveSubstring(line, " ");
+				list<string> subsets = CommonFunc::Split(line, ";");
 
 				int redMax = 0;
 				int greenMax = 0;
@@ -117,7 +119,7 @@ static class Day2
 				for (list<string>::iterator subsetit = subsets.begin(); subsetit != subsets.end(); ++subsetit)
 				{
 					string subset = *subsetit;
-					list<string> cubeColorSet = CommonFuncAOC2023::Split(subset, ",");
+					list<string> cubeColorSet = CommonFunc::Split(subset, ",");
 					for (list<string>::iterator colorit = cubeColorSet.begin(); colorit != cubeColorSet.end(); ++colorit)
 					{
 						string colorCubes = *colorit;
