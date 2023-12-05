@@ -5,27 +5,21 @@
 #include <Day2.cpp>
 #include <Day3.cpp>
 #include <Day4.cpp>
+#include <Day5.cpp>
 
 int main()
 {
-    /*std::cout << Day1::D1CalcInputSum("Day1/input.txt", false);
-    std::cout << "\n";
-    std::cout << Day1::D1CalcInputSum("Day1/input.txt", true);
-    std::cout << "\n";*/
-    /*std::cout << Day2::D2P1CalcCubeIDs("Day2/input.txt");
-    std::cout << "\n";
-    std::cout << Day2::D2P2CalcCubePowers("Day2/input.txt"); 
-    std::cout << "\n";*/
-    /*Day3::D3GetGrid("Day3/input.txt");
-    std::cout << Day3::D3P1CalcPartNumbers();
-    std::cout << "\n";
-    std::cout << Day3::D3P2GetGearRatios();
-    std::cout << "\n";*/
-    std::cout << Day4::D4P1CalcCardPoints("Day4/input.txt");
-    std::cout << "\n";
-    std::cout << Day4::D4P2CalcScratchCards("Day4/input.txt");
-    std::cout << "\n";
-
+    //std::cout << to_string(Day1::D1CalcInputSum("Day1/input.txt", false)) + "\n";
+    //std::cout << to_string(Day1::D1CalcInputSum("Day1/input.txt", true)) + "\n";
+    //std::cout << to_string(Day2::D2P1CalcCubeIDs("Day2/input.txt")) + "\n";
+    //std::cout << to_string(Day2::D2P2CalcCubePowers("Day2/input.txt")) + "\n";
+    //Day3::D3GetGrid("Day3/input.txt");
+    //std::cout << to_string(Day3::D3P1CalcPartNumbers()) + "\n";
+    //std::cout << to_string(Day3::D3P2GetGearRatios()) + "\n";
+    //std::cout << to_string(Day4::D4P1CalcCardPoints("Day4/input.txt")) + "\n";
+    //std::cout << to_string(Day4::D4P2CalcScratchCards("Day4/input.txt")) + "\n";
+    std::cout << to_string(Day5::D5P1GetLowestLocation("Day5/input.txt")) + "\n";
+    std::cout << to_string(Day5::D5P2GetLowestLocationRanges("Day5/input.txt")) + "\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
