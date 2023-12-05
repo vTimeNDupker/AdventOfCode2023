@@ -14,6 +14,15 @@ class ConversionRange
 static class Day5
 {
 	private:
+		static list<ConversionRange> seedToSoil;
+		static list<ConversionRange> soilToFertilizer;
+		static list<ConversionRange> fertilizerToWater;
+		static list<ConversionRange> waterToLight;
+		static list<ConversionRange> lightToTemperature;
+		static list<ConversionRange> temperatureToHumidity;
+		static list<ConversionRange> humidityToLocation;
+
+
 		static list<ConversionRange> GetConversionsFromFile(std::ifstream& file)
 		{
 			list<ConversionRange> ranges;
@@ -58,6 +67,26 @@ static class Day5
 
 			return newValue;
 		}
+		static int ConvertValueIfLower(int current, int input, bool first = false)
+		{
+			unsigned long value = Convert(seedToSoil, input);
+			value = Convert(soilToFertilizer, value);
+			value = Convert(fertilizerToWater, value);
+			value = Convert(waterToLight, value);
+			value = Convert(lightToTemperature, value);
+			value = Convert(temperatureToHumidity, value);
+			value = Convert(humidityToLocation, value);
+
+			if (value < current || first)
+				return value;
+			return current;
+		}
+		static list< ConversionRange> Condense(list< ConversionRange> ranges1, list< ConversionRange> ranges2)
+		{
+			for (auto element : ranges)
+			{
+			}
+		}
 
 	public:
 		static unsigned long D5P1GetLowestLocation(string filePath)
@@ -78,13 +107,6 @@ static class Day5
 			getline(file, seedsString);
 			seedsString.erase(0, seedsString.find(':') + 2);
 			list<unsigned long> seeds = CommonFunc::SplitIntoUnsignedLongs(seedsString, " ");
-			list<ConversionRange> seedToSoil;
-			list<ConversionRange> soilToFertilizer;
-			list<ConversionRange> fertilizerToWater;
-			list<ConversionRange> waterToLight;
-			list<ConversionRange> lightToTemperature;
-			list<ConversionRange> temperatureToHumidity;
-			list<ConversionRange> humidityToLocation;
 
 			while (getline(file, line))
 			{
@@ -110,16 +132,7 @@ static class Day5
 			unsigned long min = 0;
 			for (auto element : seeds)
 			{
-				unsigned long value = Convert(seedToSoil, element);
-				value = Convert(soilToFertilizer, value);
-				value = Convert(fertilizerToWater, value);
-				value = Convert(waterToLight, value);
-				value = Convert(lightToTemperature, value);
-				value = Convert(temperatureToHumidity, value);
-				value = Convert(humidityToLocation, value);
-
-				if (value < min || first)
-					min = value;
+				min = ConvertValueIfLower(min, element, first);
 				first = false;
 			}
 			return min;
@@ -142,13 +155,6 @@ static class Day5
 			getline(file, seedsString);
 			seedsString.erase(0, seedsString.find(':') + 2);
 			list<unsigned long> seeds = CommonFunc::SplitIntoUnsignedLongs(seedsString, " ");
-			list<ConversionRange> seedToSoil;
-			list<ConversionRange> soilToFertilizer;
-			list<ConversionRange> fertilizerToWater;
-			list<ConversionRange> waterToLight;
-			list<ConversionRange> lightToTemperature;
-			list<ConversionRange> temperatureToHumidity;
-			list<ConversionRange> humidityToLocation;
 
 			while (getline(file, line))
 			{
@@ -187,6 +193,14 @@ static class Day5
 				}
 				unsigned long range = element;
 				unsigned long end = start + range;
+
+				//condense ranges into 1 big converter
+				//once this exists test 
+				// check if the lowest value outside of ranges (if one exists) is lowest
+				// check if the lowest value inside of ranges is lowest
+
+				min = ConvertValueIfLower(min, start, first);
+
 
 				for (unsigned long i = start; i < end; i++)
 				{
