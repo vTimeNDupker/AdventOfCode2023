@@ -136,6 +136,15 @@ static class Day5
 					continue;
 				}
 				//element overlaps or contains destination
+				{
+					unsigned long startDif = element.destination - range.source;
+
+					//this could involve the need for "range" to be split into multiple different lists
+					//	if there are multiple it could be added to a "holdover" list and dealt with after the current Condense is finished
+
+					if (startDif > 0) //chopping off the bit of element before the overlap
+						newList.push_back(CreateConversion(element.source, element.destination, startDif));
+				}
 				
 
 			}
