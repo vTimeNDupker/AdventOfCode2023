@@ -93,9 +93,12 @@ static class Day5
 			return newRange;
 		}
 
+
+
 		static list< ConversionRange> Condense(list< ConversionRange> ranges, ConversionRange range)
 		{
 			list<ConversionRange> newList;
+			list<ConversionRange> holdOvers;
 			ConversionRange newRange = CreateConversion(range.source, range.destination, range.length);
 			for (auto element : ranges)
 			{
@@ -114,7 +117,7 @@ static class Day5
 
 				if (element.destination <= range.source)
 				{
-					//element overlaps or contains destination
+					//element overlaps or contains range
 					unsigned long startDif = range.source - element.destination;
 
 					if (startDif > 0) //chopping off the bit of element before the overlap
@@ -135,21 +138,47 @@ static class Day5
 					//element doesn't contain range
 					continue;
 				}
-				//element overlaps or contains destination
+				//range overlaps or contains element
 				{
 					unsigned long startDif = element.destination - range.source;
 
 					//this could involve the need for "range" to be split into multiple different lists
 					//	if there are multiple it could be added to a "holdover" list and dealt with after the current Condense is finished
+					holdOvers.push_back(CreateConversion(range.source, range.destination, startDif));
 
-					if (startDif > 0) //chopping off the bit of element before the overlap
-						newList.push_back(CreateConversion(element.source, element.destination, startDif));
+
+					newList.push_back(CreateConversion(element.source, range.destination + startDif, min(range.length - startDif, element.length)));
+					if (rangeSourceEnd >= elementDestEnd)
+					{
+						//range contains element
+						unsigned long endDif = rangeSourceEnd - elementDestEnd;
+						if (endDif > 0)
+							newRange = CreateConversion(range.source + startDif + element.length, range.destination + startDif + element.length, endDif);
+						else
+						{
+							newRange.length = 0;
+							break;
+						}
+					}
+					newRange.length = 0;
+
+					newList.push_back(CreateConversion(element.source + range.length - startDif, element.destination + range.length - startDif, elementDestEnd - rangeSourceEnd));
+
+					break;
+					//newRange = CreateConversion(range.source + element.length - startDif, range.destination + element.length - startDif, rangeSourceEnd - elementDestEnd);
+					//if (startDif > 0) //chopping off the bit of element before the overlap
+					//	newList.push_back(CreateConversion(element.source, element.destination, startDif));
 				}
 				
 
 			}
 			if(newRange.length > 0)
 				newList.push_back(newRange);
+			for (auto element : holdOvers)
+			{
+				newList = Condense(newList, element);
+			}
+
 			return newList;
 		}
 
