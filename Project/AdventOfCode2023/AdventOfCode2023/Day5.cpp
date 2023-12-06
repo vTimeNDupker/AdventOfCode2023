@@ -6,6 +6,8 @@
 class ConversionRange
 {
 	public:
+		
+
 		unsigned long source;
 		unsigned long destination;
 		unsigned long length;
@@ -81,11 +83,65 @@ static class Day5
 				return value;
 			return current;
 		}
-		static list< ConversionRange> Condense(list< ConversionRange> ranges1, list< ConversionRange> ranges2)
+
+		static ConversionRange CreateConversion(unsigned long sourceIn, unsigned long destinationIn, unsigned long lengthIn)
 		{
+			ConversionRange newRange;
+			newRange.source = sourceIn;
+			newRange.destination = destinationIn;
+			newRange.length = lengthIn;
+			return newRange;
+		}
+
+		static list< ConversionRange> Condense(list< ConversionRange> ranges, ConversionRange range)
+		{
+			list<ConversionRange> newList;
+			ConversionRange newRange = CreateConversion(range.source, range.destination, range.length);
 			for (auto element : ranges)
 			{
+				range = newRange;
+				unsigned long elementDestEnd = element.destination + (element.length - 1);
+				unsigned long rangeSourceEnd = range.source + (range.length - 1);
+
+
+				if (elementDestEnd < range.source ||
+					element.destination > rangeSourceEnd)
+				{
+					//no overlap
+					newList.push_back(element);
+					continue;
+				}
+
+				if (element.destination <= range.source)
+				{
+					//element overlaps or contains destination
+					unsigned long startDif = range.source - element.destination;
+
+					if (startDif > 0) //chopping off the bit of element before the overlap
+						newList.push_back(CreateConversion(element.source, element.destination, startDif));
+
+					newList.push_back(CreateConversion(element.source + startDif, range.destination, min(range.length, element.length - startDif)));
+
+					if (elementDestEnd >= rangeSourceEnd)
+					{
+						//element contains range
+						unsigned long endDif = elementDestEnd - rangeSourceEnd;
+						if(endDif > 0)
+							newList.push_back(CreateConversion(element.source + startDif + range.length, element.destination + startDif + range.length, endDif));
+						newRange.length = 0;
+						break;
+					}
+					newRange = CreateConversion(range.source + element.length - startDif, range.destination + element.length - startDif, rangeSourceEnd - elementDestEnd);
+					//element doesn't contain range
+					continue;
+				}
+				//element overlaps or contains destination
+				
+
 			}
+			if(newRange.length > 0)
+				newList.push_back(newRange);
+			return newList;
 		}
 
 	public:
