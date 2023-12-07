@@ -18,8 +18,8 @@ int main()
     //std::cout << to_string(Day3::D3P2GetGearRatios()) + "\n";
     //std::cout << to_string(Day4::D4P1CalcCardPoints("Day4/input.txt")) + "\n";
     //std::cout << to_string(Day4::D4P2CalcScratchCards("Day4/input.txt")) + "\n";
-    std::cout << to_string(Day5::D5P1GetLowestLocation("Day5/input.txt")) + "\n";
-    std::cout << to_string(Day5::D5P2GetLowestLocationRanges("Day5/input.txt")) + "\n";
+    std::cout << to_string(Day5::D5P1GetLowestLocation("Day5/txt.txt")) + "\n";
+    std::cout << to_string(Day5::D5P2GetLowestLocationRanges("Day5/txt.txt")) + "\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

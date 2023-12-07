@@ -16,13 +16,6 @@ class ConversionRange
 static class Day5
 {
 	private:
-		static list<ConversionRange> seedToSoil;
-		static list<ConversionRange> soilToFertilizer;
-		static list<ConversionRange> fertilizerToWater;
-		static list<ConversionRange> waterToLight;
-		static list<ConversionRange> lightToTemperature;
-		static list<ConversionRange> temperatureToHumidity;
-		static list<ConversionRange> humidityToLocation;
 
 
 		static list<ConversionRange> GetConversionsFromFile(std::ifstream& file)
@@ -52,6 +45,32 @@ static class Day5
 			return ranges;
 		}
 
+		static list<ConversionRange> GetConversionsFromFileAndCondense(std::ifstream& file, list<ConversionRange> inputConversions)
+		{
+			string line;
+			list<ConversionRange> nextConversions;
+			while (getline(file, line))
+			{
+				if (line.size() == 0)
+					return inputConversions;
+				list<unsigned long> conversionString = CommonFunc::SplitIntoUnsignedLongs(line, " ");
+				unsigned long id = 0;
+				ConversionRange conversion;
+				for (auto element : conversionString)
+				{
+					if (id == 0)
+						conversion.destination = element;
+					if (id == 1)
+						conversion.source = element;
+					if (id == 2)
+						conversion.length = element;
+					id++;
+				}
+				nextConversions.push_back(conversion);
+			}
+			return Condense(inputConversions, nextConversions);
+		}
+
 		static unsigned long Convert(list<ConversionRange> ranges, unsigned long value)
 		{
 			unsigned long newValue;
@@ -69,15 +88,10 @@ static class Day5
 
 			return newValue;
 		}
-		static int ConvertValueIfLower(int current, int input, bool first = false)
+
+		static unsigned long ConvertValueIfLower(unsigned long current, unsigned long input, list<ConversionRange> range, bool first = false)
 		{
-			unsigned long value = Convert(seedToSoil, input);
-			value = Convert(soilToFertilizer, value);
-			value = Convert(fertilizerToWater, value);
-			value = Convert(waterToLight, value);
-			value = Convert(lightToTemperature, value);
-			value = Convert(temperatureToHumidity, value);
-			value = Convert(humidityToLocation, value);
+			unsigned long value = Convert(range, input);
 
 			if (value < current || first)
 				return value;
@@ -95,91 +109,115 @@ static class Day5
 
 
 
-		static list< ConversionRange> Condense(list< ConversionRange> ranges, ConversionRange range)
+		static list< ConversionRange> Condense(list< ConversionRange> currentRanges, list< ConversionRange > nextRanges)
 		{
-			list<ConversionRange> newList;
-			list<ConversionRange> holdOvers;
-			ConversionRange newRange = CreateConversion(range.source, range.destination, range.length);
-			for (auto element : ranges)
+			//once a range has been "converted" we then add it to a "converted range" this is now not checked against
+			//any left overs are added back to their respective lists
+			//once no overlaps occur then all lists are merged and returned,
+
+			list<ConversionRange> convertedRanges;
+			bool overlaped = true;
+			while (overlaped)
 			{
-				range = newRange;
-				unsigned long elementDestEnd = element.destination + (element.length - 1);
-				unsigned long rangeSourceEnd = range.source + (range.length - 1);
+				overlaped = false;
+				bool breakOut = false;
 
+				list<ConversionRange> currentsToRemove;
+				list < ConversionRange> nextsToRemove;
 
-				if (elementDestEnd < range.source ||
-					element.destination > rangeSourceEnd)
+				list < ConversionRange> currentsToAdd;
+				list < ConversionRange> nextsToAdd;
+
+				for (auto nextRange : nextRanges)
 				{
-					//no overlap
-					newList.push_back(element);
-					continue;
-				}
-
-				if (element.destination <= range.source)
-				{
-					//element overlaps or contains range
-					unsigned long startDif = range.source - element.destination;
-
-					if (startDif > 0) //chopping off the bit of element before the overlap
-						newList.push_back(CreateConversion(element.source, element.destination, startDif));
-
-					newList.push_back(CreateConversion(element.source + startDif, range.destination, min(range.length, element.length - startDif)));
-
-					if (elementDestEnd >= rangeSourceEnd)
+					for (auto currentRange : currentRanges)
 					{
-						//element contains range
-						unsigned long endDif = elementDestEnd - rangeSourceEnd;
-						if(endDif > 0)
-							newList.push_back(CreateConversion(element.source + startDif + range.length, element.destination + startDif + range.length, endDif));
-						newRange.length = 0;
-						break;
-					}
-					newRange = CreateConversion(range.source + element.length - startDif, range.destination + element.length - startDif, rangeSourceEnd - elementDestEnd);
-					//element doesn't contain range
-					continue;
-				}
-				//range overlaps or contains element
-				{
-					unsigned long startDif = element.destination - range.source;
-
-					//this could involve the need for "range" to be split into multiple different lists
-					//	if there are multiple it could be added to a "holdover" list and dealt with after the current Condense is finished
-					holdOvers.push_back(CreateConversion(range.source, range.destination, startDif));
+						unsigned long currentDestEnd = currentRange.destination + (currentRange.length - 1);
+						unsigned long nextSourceEnd = nextRange.source + (nextRange.length - 1);
 
 
-					newList.push_back(CreateConversion(element.source, range.destination + startDif, min(range.length - startDif, element.length)));
-					if (rangeSourceEnd >= elementDestEnd)
-					{
-						//range contains element
-						unsigned long endDif = rangeSourceEnd - elementDestEnd;
-						if (endDif > 0)
-							newRange = CreateConversion(range.source + startDif + element.length, range.destination + startDif + element.length, endDif);
+						if (currentDestEnd < nextRange.source ||
+							currentRange.destination > nextSourceEnd)
+						{
+							//no overlap
+							continue;
+						}
+						overlaped = true;
+						currentsToRemove.push_back(currentRange);
+						nextsToRemove.push_back(nextRange);
+						if (currentRange.destination <= nextRange.source)
+						{
+							//element overlaps or contains range
+							unsigned long startDif = nextRange.source - currentRange.destination;
+
+							if (startDif > 0) //chopping off the bit of element before the overlap
+								currentsToAdd.push_back(CreateConversion(currentRange.source, currentRange.destination, startDif));
+
+							convertedRanges.push_back(CreateConversion(currentRange.source + startDif, nextRange.destination, min(nextRange.length, currentRange.length - startDif)));
+
+							if (currentDestEnd >= nextSourceEnd)
+							{
+								//element contains range
+								unsigned long endDif = currentDestEnd - nextSourceEnd;
+								if (endDif > 0)
+									currentsToAdd.push_back(CreateConversion(currentRange.source + startDif + nextRange.length, currentRange.destination + startDif + nextRange.length, endDif));
+							}
+							else
+							{
+								nextsToAdd.push_back(CreateConversion(nextRange.source + currentRange.length - startDif, nextRange.destination + currentRange.length - startDif, nextSourceEnd - currentDestEnd));
+								//element doesn't contain range
+							}
+						}
 						else
 						{
-							newRange.length = 0;
-							break;
+							unsigned long startDif = currentRange.destination - nextRange.source;
+
+							nextsToAdd.push_back(CreateConversion(nextRange.source, nextRange.destination, startDif));
+
+							convertedRanges.push_back(CreateConversion(currentRange.source, nextRange.destination + startDif, min(nextRange.length - startDif, currentRange.length)));
+							if (nextSourceEnd >= currentDestEnd)
+							{
+								//range contains element
+								unsigned long endDif = nextSourceEnd - currentDestEnd;
+								if (endDif > 0)
+									nextsToAdd.push_back(CreateConversion(nextRange.source + startDif + currentRange.length, nextRange.destination + startDif + currentRange.length, endDif));
+							}
+							else
+							{
+								currentsToAdd.push_back(CreateConversion(currentRange.source + nextRange.length - startDif, currentRange.destination + nextRange.length - startDif, currentDestEnd - nextSourceEnd));
+							}
 						}
+						breakOut = true;
+						break;
 					}
-					newRange.length = 0;
-
-					newList.push_back(CreateConversion(element.source + range.length - startDif, element.destination + range.length - startDif, elementDestEnd - rangeSourceEnd));
-
-					break;
-					//newRange = CreateConversion(range.source + element.length - startDif, range.destination + element.length - startDif, rangeSourceEnd - elementDestEnd);
-					//if (startDif > 0) //chopping off the bit of element before the overlap
-					//	newList.push_back(CreateConversion(element.source, element.destination, startDif));
+					if (breakOut)
+						break;
 				}
-				
-
+				do these
+				//for removes, remove
+				//for adds add
 			}
-			if(newRange.length > 0)
-				newList.push_back(newRange);
-			for (auto element : holdOvers)
+			//Combine remaining currnent and next into converted, and return
+			return convertedRanges;
+		}
+
+		static unsigned long GetLowestNotInARange(unsigned long defaultValue, unsigned long start, unsigned long end, list< ConversionRange> ranges)
+		{
+			bool collidedWithRange = false;
+			for (auto element : ranges)
 			{
-				newList = Condense(newList, element);
+				if (start >= element.source && start < element.source + element.length)
+				{
+					collidedWithRange = true;
+					start = element.source + element.length;
+					break;
+				}
 			}
-
-			return newList;
+			if (start >= end)
+				return defaultValue;
+			if (collidedWithRange)
+				return GetLowestNotInARange(defaultValue, start, end, ranges);
+			return start;
 		}
 
 	public:
@@ -201,6 +239,14 @@ static class Day5
 			getline(file, seedsString);
 			seedsString.erase(0, seedsString.find(':') + 2);
 			list<unsigned long> seeds = CommonFunc::SplitIntoUnsignedLongs(seedsString, " ");
+
+			list<ConversionRange> seedToSoil;
+			list<ConversionRange> soilToFertilizer;
+			list<ConversionRange> fertilizerToWater;
+			list<ConversionRange> waterToLight;
+			list<ConversionRange> lightToTemperature;
+			list<ConversionRange> temperatureToHumidity;
+			list<ConversionRange> humidityToLocation;
 
 			while (getline(file, line))
 			{
@@ -226,7 +272,16 @@ static class Day5
 			unsigned long min = 0;
 			for (auto element : seeds)
 			{
-				min = ConvertValueIfLower(min, element, first);
+				unsigned long value = Convert(seedToSoil, element);
+				value = Convert(soilToFertilizer, value);
+				value = Convert(fertilizerToWater, value);
+				value = Convert(waterToLight, value);
+				value = Convert(lightToTemperature, value);
+				value = Convert(temperatureToHumidity, value);
+				value = Convert(humidityToLocation, value);
+
+				if (value < min || first)
+					min = value;
 				first = false;
 			}
 			return min;
@@ -249,26 +304,14 @@ static class Day5
 			getline(file, seedsString);
 			seedsString.erase(0, seedsString.find(':') + 2);
 			list<unsigned long> seeds = CommonFunc::SplitIntoUnsignedLongs(seedsString, " ");
-
+			list<ConversionRange> seedToLocation;
 			while (getline(file, line))
 			{
 				data.push_back(line);
 				if (line.size() == 0)
 					continue;
-				if (line.find("seed-to-soil") != string::npos)
-					seedToSoil = GetConversionsFromFile(file);
-				if (line.find("soil-to-fertilizer") != string::npos)
-					soilToFertilizer = GetConversionsFromFile(file);
-				if (line.find("fertilizer-to-water") != string::npos)
-					fertilizerToWater = GetConversionsFromFile(file);
-				if (line.find("water-to-light") != string::npos)
-					waterToLight = GetConversionsFromFile(file);
-				if (line.find("light-to-temperature") != string::npos)
-					lightToTemperature = GetConversionsFromFile(file);
-				if (line.find("temperature-to-humidity") != string::npos)
-					temperatureToHumidity = GetConversionsFromFile(file);
-				if (line.find("humidity-to-location") != string::npos)
-					humidityToLocation = GetConversionsFromFile(file);
+				if (line.find("-to-") != string::npos)
+					seedToLocation = GetConversionsFromFileAndCondense(file, seedToLocation);
 			}
 			bool first = true;
 			unsigned long min = 0;
@@ -293,23 +336,21 @@ static class Day5
 				// check if the lowest value outside of ranges (if one exists) is lowest
 				// check if the lowest value inside of ranges is lowest
 
-				min = ConvertValueIfLower(min, start, first);
 
-
-				for (unsigned long i = start; i < end; i++)
+				//min = ConvertValueIfLower(min, start, first);
+				for (auto range : seedToLocation)
 				{
-					unsigned long value = Convert(seedToSoil, i);
-					value = Convert(soilToFertilizer, value);
-					value = Convert(fertilizerToWater, value);
-					value = Convert(waterToLight, value);
-					value = Convert(lightToTemperature, value);
-					value = Convert(temperatureToHumidity, value);
-					value = Convert(humidityToLocation, value);
+					if (range.source + range.length < start ||
+						range.source > end)
+						continue;
+					if (range.source <= start)
+						min = ConvertValueIfLower(min, start, seedToLocation, first);
+					else
+						min = ConvertValueIfLower(min, range.source, seedToLocation, first);
 
-					if (value < min || first)
-						min = value;
 					first = false;
 				}
+				min = GetLowestNotInARange(min, start, end, seedToLocation);
 				hasStart = false;
 			}
 			return min;
