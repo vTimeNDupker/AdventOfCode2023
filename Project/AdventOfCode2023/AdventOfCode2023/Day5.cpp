@@ -45,6 +45,24 @@ static class Day5
 			return ranges;
 		}
 
+		static ConversionRange GetRangeFromString(string input)
+		{
+			list<unsigned long> conversionString = CommonFunc::SplitIntoUnsignedLongs(input, " ");
+			unsigned long id = 0;
+			ConversionRange conversion;
+			for (auto element : conversionString)
+			{
+				if (id == 0)
+					conversion.destination = element;
+				if (id == 1)
+					conversion.source = element;
+				if (id == 2)
+					conversion.length = element;
+				id++;
+			}
+			return conversion;
+		}
+
 		static list<ConversionRange> GetConversionsFromFileAndCondense(std::ifstream& file, list<ConversionRange> inputConversions)
 		{
 			string line;
@@ -193,10 +211,93 @@ static class Day5
 					if (breakOut)
 						break;
 				}
-				do these
-				//for removes, remove
-				//for adds add
+
+				list < ConversionRange> temp;
+				for (auto currentRange : currentRanges)
+				{
+					bool found = false;
+					for (auto toRemove : currentsToRemove)
+					{
+						if (currentRange.destination == toRemove.destination && currentRange.length == toRemove.length && currentRange.source == toRemove.source)
+						{
+							found = true;
+							break;
+						}
+					}
+					if (!found)
+						temp.push_back(currentRange);
+				}
+				currentRanges = temp;
+
+				temp.clear();
+				for (auto nextRange : nextRanges)
+				{
+					bool found = false;
+					for (auto toRemove : nextsToRemove)
+					{
+						if (nextRange.destination == toRemove.destination && nextRange.length == toRemove.length && nextRange.source == toRemove.source)
+						{
+							found = true;
+							break;
+						}
+					}
+					if (!found)
+						temp.push_back(nextRange);
+				}
+				nextRanges = temp;
+
+				/*for (auto toRemove : currentsToRemove)
+					currentRanges.remove(toRemove);
+				for (auto toRemove : nextsToRemove)
+					nextRanges.remove(toRemove);*/
+
+				/*list<ConversionRange>::iterator i = currentRanges.begin();
+				while (i != currentRanges.end())
+				{
+					bool erased = false;
+					for (auto toRemove : currentsToRemove)
+					{
+						currentRanges.remove(toRemove);
+						if ((*i).destination == toRemove.destination && (*i).length == toRemove.length && (*i).source == toRemove.source)
+						{
+							i = currentRanges.erase(i);
+							erased = true;
+							break;
+						}
+					}
+					if(!erased)
+						i++;
+				}
+
+				list<ConversionRange>::iterator j = nextRanges.begin();
+				while (j != nextRanges.end())
+				{
+					bool erased = false;
+					for (auto toRemove : currentsToRemove)
+					{
+						nextRanges.remove(toRemove);
+						if ((*j).destination == toRemove.destination && (*j).length == toRemove.length && (*j).source == toRemove.source)
+						{
+							j = nextRanges.erase(j);
+							erased = true;
+							break;
+						}
+					}
+					if (!erased)
+						j++;
+				}*/
+
+
+				for (auto toAdd : currentsToAdd)
+					currentRanges.push_back(toAdd);
+				for (auto toAdd : nextsToAdd)
+					nextRanges.push_back(toAdd);
 			}
+
+			for (auto toAdd : nextRanges)
+				convertedRanges.push_back(toAdd);
+			for (auto toAdd : currentRanges)
+				convertedRanges.push_back(toAdd);
 			//Combine remaining currnent and next into converted, and return
 			return convertedRanges;
 		}
@@ -239,46 +340,26 @@ static class Day5
 			getline(file, seedsString);
 			seedsString.erase(0, seedsString.find(':') + 2);
 			list<unsigned long> seeds = CommonFunc::SplitIntoUnsignedLongs(seedsString, " ");
-
-			list<ConversionRange> seedToSoil;
-			list<ConversionRange> soilToFertilizer;
-			list<ConversionRange> fertilizerToWater;
-			list<ConversionRange> waterToLight;
-			list<ConversionRange> lightToTemperature;
-			list<ConversionRange> temperatureToHumidity;
-			list<ConversionRange> humidityToLocation;
-
+			list<ConversionRange> seedToLocation;
+			list<ConversionRange> next;
 			while (getline(file, line))
 			{
 				data.push_back(line);
 				if (line.size() == 0)
+				{
+					seedToLocation = Condense(seedToLocation, next);
+					next.clear();
 					continue;
-				if (line.find("seed-to-soil") != string::npos)
-					seedToSoil = GetConversionsFromFile(file);
-				if (line.find("soil-to-fertilizer") != string::npos)
-					soilToFertilizer = GetConversionsFromFile(file);
-				if (line.find("fertilizer-to-water") != string::npos)
-					fertilizerToWater = GetConversionsFromFile(file);
-				if (line.find("water-to-light") != string::npos)
-					waterToLight = GetConversionsFromFile(file);
-				if (line.find("light-to-temperature") != string::npos)
-					lightToTemperature = GetConversionsFromFile(file);
-				if (line.find("temperature-to-humidity") != string::npos)
-					temperatureToHumidity = GetConversionsFromFile(file);
-				if (line.find("humidity-to-location") != string::npos)
-					humidityToLocation = GetConversionsFromFile(file);
+				}
+				if (line.find("-to-") == string::npos)
+					next.push_back(GetRangeFromString(line));
 			}
+			seedToLocation = Condense(seedToLocation, next);
 			bool first = true;
 			unsigned long min = 0;
 			for (auto element : seeds)
 			{
-				unsigned long value = Convert(seedToSoil, element);
-				value = Convert(soilToFertilizer, value);
-				value = Convert(fertilizerToWater, value);
-				value = Convert(waterToLight, value);
-				value = Convert(lightToTemperature, value);
-				value = Convert(temperatureToHumidity, value);
-				value = Convert(humidityToLocation, value);
+				unsigned long value = Convert(seedToLocation, element);
 
 				if (value < min || first)
 					min = value;
@@ -305,14 +386,20 @@ static class Day5
 			seedsString.erase(0, seedsString.find(':') + 2);
 			list<unsigned long> seeds = CommonFunc::SplitIntoUnsignedLongs(seedsString, " ");
 			list<ConversionRange> seedToLocation;
+			list<ConversionRange> next;
 			while (getline(file, line))
 			{
 				data.push_back(line);
 				if (line.size() == 0)
+				{
+					seedToLocation = Condense(seedToLocation, next);
+					next.clear();
 					continue;
-				if (line.find("-to-") != string::npos)
-					seedToLocation = GetConversionsFromFileAndCondense(file, seedToLocation);
+				}
+				if (line.find("-to-") == string::npos)
+					next.push_back(GetRangeFromString(line));
 			}
+			seedToLocation = Condense(seedToLocation, next);
 			bool first = true;
 			unsigned long min = 0;
 
