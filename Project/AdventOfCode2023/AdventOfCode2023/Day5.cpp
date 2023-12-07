@@ -6,8 +6,6 @@
 class ConversionRange
 {
 	public:
-		
-
 		unsigned long source;
 		unsigned long destination;
 		unsigned long length;
@@ -16,34 +14,6 @@ class ConversionRange
 static class Day5
 {
 	private:
-
-
-		static list<ConversionRange> GetConversionsFromFile(std::ifstream& file)
-		{
-			list<ConversionRange> ranges;
-			string line;
-			while (getline(file, line))
-			{
-				if (line.size() == 0)
-					return ranges;
-				list<unsigned long> conversionString = CommonFunc::SplitIntoUnsignedLongs(line, " ");
-				unsigned long id = 0;
-				ConversionRange conversion;
-				for (auto element : conversionString)
-				{
-					if (id == 0)
-						conversion.destination = element;
-					if (id == 1)
-						conversion.source = element;
-					if (id == 2)
-						conversion.length = element;
-					id++;
-				}
-
-				ranges.push_back(conversion);
-			}
-			return ranges;
-		}
 
 		static ConversionRange GetRangeFromString(string input)
 		{
@@ -61,32 +31,6 @@ static class Day5
 				id++;
 			}
 			return conversion;
-		}
-
-		static list<ConversionRange> GetConversionsFromFileAndCondense(std::ifstream& file, list<ConversionRange> inputConversions)
-		{
-			string line;
-			list<ConversionRange> nextConversions;
-			while (getline(file, line))
-			{
-				if (line.size() == 0)
-					return inputConversions;
-				list<unsigned long> conversionString = CommonFunc::SplitIntoUnsignedLongs(line, " ");
-				unsigned long id = 0;
-				ConversionRange conversion;
-				for (auto element : conversionString)
-				{
-					if (id == 0)
-						conversion.destination = element;
-					if (id == 1)
-						conversion.source = element;
-					if (id == 2)
-						conversion.length = element;
-					id++;
-				}
-				nextConversions.push_back(conversion);
-			}
-			return Condense(inputConversions, nextConversions);
 		}
 
 		static unsigned long Convert(list<ConversionRange> ranges, unsigned long value)
@@ -246,47 +190,6 @@ static class Day5
 				}
 				nextRanges = temp;
 
-				/*for (auto toRemove : currentsToRemove)
-					currentRanges.remove(toRemove);
-				for (auto toRemove : nextsToRemove)
-					nextRanges.remove(toRemove);*/
-
-				/*list<ConversionRange>::iterator i = currentRanges.begin();
-				while (i != currentRanges.end())
-				{
-					bool erased = false;
-					for (auto toRemove : currentsToRemove)
-					{
-						currentRanges.remove(toRemove);
-						if ((*i).destination == toRemove.destination && (*i).length == toRemove.length && (*i).source == toRemove.source)
-						{
-							i = currentRanges.erase(i);
-							erased = true;
-							break;
-						}
-					}
-					if(!erased)
-						i++;
-				}
-
-				list<ConversionRange>::iterator j = nextRanges.begin();
-				while (j != nextRanges.end())
-				{
-					bool erased = false;
-					for (auto toRemove : currentsToRemove)
-					{
-						nextRanges.remove(toRemove);
-						if ((*j).destination == toRemove.destination && (*j).length == toRemove.length && (*j).source == toRemove.source)
-						{
-							j = nextRanges.erase(j);
-							erased = true;
-							break;
-						}
-					}
-					if (!erased)
-						j++;
-				}*/
-
 
 				for (auto toAdd : currentsToAdd)
 					currentRanges.push_back(toAdd);
@@ -423,8 +326,6 @@ static class Day5
 				// check if the lowest value outside of ranges (if one exists) is lowest
 				// check if the lowest value inside of ranges is lowest
 
-
-				//min = ConvertValueIfLower(min, start, first);
 				for (auto range : seedToLocation)
 				{
 					if (range.source + range.length < start ||
