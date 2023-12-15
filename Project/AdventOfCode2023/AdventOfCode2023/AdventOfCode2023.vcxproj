@@ -148,6 +148,8 @@
     <ClCompile Include="Day3.cpp" />
     <ClCompile Include="Day4.cpp" />
     <ClCompile Include="Day5.cpp" />
+    <ClCompile Include="Day6.cpp" />
+    <ClCompile Include="Day7.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommonFunctions.h" />

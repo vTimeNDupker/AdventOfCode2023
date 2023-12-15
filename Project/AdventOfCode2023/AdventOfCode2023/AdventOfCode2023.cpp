@@ -6,6 +6,8 @@
 #include <Day3.cpp>
 #include <Day4.cpp>
 #include <Day5.cpp>
+#include <Day6.cpp>
+#include <Day7.cpp>
 
 int main()
 {
@@ -18,8 +20,12 @@ int main()
     //std::cout << to_string(Day3::D3P2GetGearRatios()) + "\n";
     //std::cout << to_string(Day4::D4P1CalcCardPoints("Day4/input.txt")) + "\n";
     //std::cout << to_string(Day4::D4P2CalcScratchCards("Day4/input.txt")) + "\n";
-    std::cout << to_string(Day5::D5P1GetLowestLocation("Day5/input.txt")) + "\n";
-    std::cout << to_string(Day5::D5P2GetLowestLocationRanges("Day5/input.txt")) + "\n";
+    //std::cout << to_string(Day5::D5P1GetLowestLocation("Day5/input.txt")) + "\n";
+    //std::cout << to_string(Day5::D5P2GetLowestLocationRanges("Day5/input.txt")) + "\n";
+    //std::cout << to_string(Day6::D6P1GetMultWinNumbers("Day6/input.txt")) + "\n";
+    //std::cout << to_string(Day6::D6P2GetMergedWinNumber("Day6/input.txt")) + "\n";
+    std::cout << to_string(Day7::D7P1GetTotalWinnings("Day7/input.txt")) + "\n";
+    std::cout << to_string(Day7::D7P2GetTotalWinnings("Day7/input.txt")) + "\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
